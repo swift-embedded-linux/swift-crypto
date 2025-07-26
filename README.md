@@ -2,6 +2,37 @@
 
 Swift Crypto is an open-source implementation of a substantial portion of the API of [Apple CryptoKit](https://developer.apple.com/documentation/cryptokit) suitable for use on Linux and ARM64 Windows platforms. It enables cross-platform or server applications with the advantages of CryptoKit.
 
+## Patches for armv7
+
+NOTE: To use this branch, the best way is to use a [Swift mirror configuration with SwiftPM](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0219-package-manager-dependency-mirroring.md). Start by adding a `.swiftpm/configuration/mirrors.json` file to the root of your project (the same folder as where `Package.swift` is located), then add the following lines into the file:
+
+```json
+{
+  "object" : [
+    {
+      "mirror" : "https://github.com/swift-embedded-linux/swift-crypto.git",
+      "original" : "https://github.com/apple/swift-crypto.git"
+    },
+  ],
+  "version" : 1
+}
+```
+
+Then, in your `Package.swift` file, simply include `swift-crypto` as a dependency using the original URL but pointing to the `patched-for-armv7` branch:
+
+```swift
+        // Only available on swift-embedded-linux fork
+        .package(url: "https://github.com/apple/swift-crypto.git", branch: "patched-for-armv7"),
+```
+
+Also, in `Package.swift`, ensure that your target explicitely depends on the `Crypto` module as well:
+
+```swift
+        .product(name: "Crypto", package: "swift-crypto"),
+```
+
+And you should be able to compile without errors. Note that the patched-for-armv7 branch follows the latest 3.x.x series of swift-crypto versions, and is periodically updated with the latest from `apple/swift-crypto:main`.
+
 ## Using Swift Crypto
 
 Swift Crypto is available as a Swift Package Manager package. To use it, add the following dependency in your `Package.swift`:
